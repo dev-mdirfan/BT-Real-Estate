@@ -46,11 +46,25 @@ All resources can be found in [resources](../resources) directory.
   - [8.2. Register Login Templates](#82-register-login-templates)
   - [8.3. Message Alerts](#83-message-alerts)
   - [8.4. User Registration](#84-user-registration)
-  - [8.5.](#85)
-  - [8.6.](#86)
-  - [8.7.](#87)
-  - [8.8.](#88)
-  - [8.9.](#89)
+  - [8.5. User Login](#85-user-login)
+  - [8.6. Logout Navbar Auth Links](#86-logout-navbar-auth-links)
+  - [8.7. Dynamic Page Titles](#87-dynamic-page-titles)
+  - [9.1. Contacts App Model](#91-contacts-app-model)
+  - [9.2. Contacts Admin Customization](#92-contacts-admin-customization)
+  - [9.3. Contact Form Prep](#93-contact-form-prep)
+  - [9.4. Contact Form Submission](#94-contact-form-submission)
+  - [9.5. Inquiry Check Send Email](#95-inquiry-check-send-email)
+  - [9.6. Dashboard Functionality](#96-dashboard-functionality)
+  - [10.1. Pushing To Github](#101-pushing-to-github)
+  - [10.1. Droplet Setup SSH Keys](#101-droplet-setup-ssh-keys)
+  - [10.1.](#101)
+  - [10.1.](#101-1)
+  - [10.1.](#101-2)
+  - [10.1.](#101-3)
+  - [10.1.](#101-4)
+  - [10.1.](#101-5)
+  - [10.1.](#101-6)
+  - [10.1.](#101-7)
 
 <!-- TOC -->
 
@@ -2072,15 +2086,722 @@ Please note that the code provided is a summary and may require adjustments and 
 
 ## 8.4. User Registration
 
-## 8.5.
+Step 1: Form Validation and Storing Field Values
+- The video begins by discussing the process of user registration and form validation.
+- The speaker mentions the need to put submitted form field values into variables.
+- Using the request object, the speaker demonstrates how to retrieve form values using the POST method.
+- The form fields that are retrieved include first name, last name, username, email, password, and password confirmation.
 
-## 8.6.
+```python
+# Retrieving form values
+first_name = request.POST['first_name']
+last_name = request.POST['last_name']
+username = request.POST['username']
+email = request.POST['email']
+password = request.POST['password']
+password2 = request.POST['password2']
+```
 
-## 8.7.
+Step 2: Password Matching Validation
+- The speaker proceeds to implement password matching validation.
+- If the passwords entered by the user do not match, an error message is displayed using the `messages.error()` function.
+- The user is then redirected back to the registration page.
 
-## 8.8.
+```python
+# Password matching validation
+if password != password2:
+    messages.error(request, "Passwords do not match.")
+    return redirect('register')
+```
 
-## 8.9.
+Step 3: Checking Username and Email Uniqueness
+- The speaker moves on to checking the uniqueness of the username and email entered by the user.
+- The default Django user model is imported to work with user-related operations.
+- The `filter()` function is used to check if the username already exists in the database.
+- If the username is found, an error message is displayed and the user is redirected back to the registration page.
+- The same process is followed for checking the uniqueness of the email.
+
+```python
+# Checking username uniqueness
+if User.objects.filter(username=username).exists():
+    messages.error(request, "Username is already taken.")
+    return redirect('register')
+
+# Checking email uniqueness
+if User.objects.filter(email=email).exists():
+    messages.error(request, "Email is already being used.")
+    return redirect('register')
+```
+
+Step 4: User Registration
+- After successful validation and uniqueness checks, the user is ready to be registered.
+- The `create_user()` function is used to create a new user using the Django user model.
+- The form field values are assigned to the corresponding attributes of the user object.
+- The user is then saved to the database.
+
+```python
+# User registration
+user = User.objects.create_user(
+    username=username,
+    password=password,
+    email=email,
+    first_name=first_name,
+    last_name=last_name
+)
+user.save()
+```
+
+Step 5: Success Message and Redirect
+- Upon successful user registration, a success message is displayed to the user.
+- The user is redirected to the login page to manually log in after registration.
+
+```python
+messages.success(request, "You are now registered and can log in.")
+return redirect('login')
+```
+
+Note: Throughout the process, the `messages.success()` and `messages.error()` functions are used to display appropriate success and error messages to the user.
+
+## 8.5. User Login
+
+Step-by-step breakdown of the transcript with code snippets:
+
+1. The previous video covered user registration, including form validation.
+2. The current focus is on implementing user login functionality.
+3. Open the `accounts/views.py` file in Visual Studio Code (VS Code) or any preferred text editor.
+4. Locate the `login` method within the file.
+
+```python
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+```
+
+5. Ensure that the method is a POST request to indicate that the login form has been submitted.
+6. Retrieve the `username` and `password` variables from the form data.
+
+```python
+        user = None
+        user = authenticate(username=username, password=password)
+```
+
+7. Create a variable named `user` and set it to `None`.
+8. Use the `authenticate` method, which comes from Django's contrib module, to verify the provided `username` and `password` against the database.
+
+```python
+        if user is not None:
+            auth.login(request, user)
+            messages.success(request, 'You are now logged in.')
+            return redirect('dashboard')
+```
+
+9. Check if the `user` variable is not `None`, indicating that the user has been found in the database with the provided credentials.
+10. If the user is found, log them in using the `auth.login()` method.
+11. Display a success message using Django's messaging framework.
+12. Redirect the user to the dashboard page.
+
+```python
+        else:
+            messages.error(request, 'Invalid credentials.')
+            return redirect('login')
+```
+
+13. If the user is not found, display an error message using Django's messaging framework.
+14. Redirect the user back to the login page.
+
+15. Save the changes and refresh the page to see the login form.
+16. Test the login functionality by entering valid credentials (e.g., "Kathy") and the corresponding password.
+17. Upon successful login, the user will be redirected to the dashboard.
+18. Note that logging in as a regular user will automatically log the user out from the admin area, as both users share the same table in the database.
+
+The provided code snippets demonstrate the steps involved in implementing user login functionality. However, it is essential to consider the overall structure of your project and ensure that all necessary imports, URLs, and templates are correctly configured to support the login functionality.
+
+## 8.6. Logout Navbar Auth Links
+
+Certainly! Here is a step-by-step breakdown with relevant code snippets:
+
+1. The speaker starts by mentioning that in the previous video, they successfully implemented login authentication and were redirected to the dashboard. However, the dashboard page only contains an H1 element, so they need to make some changes.
+
+2. They navigate to their Sublime Text editor where they have the bootstrap theme and open the "dashboard.html" file. They locate the section where they want to add content, right below the navbar.
+
+Code:
+```html
+<!-- dashboard.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Add content here -->
+{% endblock %}
+```
+
+3. Next, they switch back to VS Code and open the "accounts/dashboard.html" template. They paste the content from the Sublime Text editor into the template. However, they need to extend the base template and wrap the content in a block.
+
+Code:
+```html
+<!-- dashboard.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Paste content here -->
+{% endblock %}
+```
+
+4. The speaker focuses on modifying the navbar links based on user authentication. They open the "partials/_navbar.html" template and locate the `<ul>` element where the navbar links are present.
+
+Code:
+```html
+<!-- _navbar.html -->
+<ul class="navbar-nav ml-auto">
+    {% if user.is_authenticated %}
+        <!-- Links for authenticated users -->
+    {% else %}
+        <!-- Links for non-authenticated users -->
+    {% endif %}
+</ul>
+```
+
+5. Within the conditional statement, they add code for authenticated users. In this case, they simply add a "Hello" message to test if the conditional is working.
+
+Code:
+```html
+<!-- _navbar.html -->
+{% if user.is_authenticated %}
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            Hello
+        </a>
+    </li>
+{% else %}
+    <!-- Non-authenticated links -->
+{% endif %}
+```
+
+6. The speaker proceeds to create a logout link. However, they mention that a simple anchor tag won't suffice as the logout functionality requires a POST request. Instead, they create a form that resembles a link and triggers a POST request when clicked.
+
+Code:
+```html
+<!-- _navbar.html -->
+{% if user.is_authenticated %}
+    <!-- Existing code -->
+{% else %}
+    <li class="nav-item">
+        <a class="nav-link" href="#">
+            Log out
+        </a>
+    </li>
+{% endif %}
+```
+
+7. They add a JavaScript snippet within the logout link to submit the form when clicked.
+
+Code:
+```html
+<!-- _navbar.html -->
+{% if user.is_authenticated %}
+    <!-- Existing code -->
+{% else %}
+    <li class="nav-item">
+        <a class="nav-link" href="javascript:{}" onclick="document.getElementById('logout').submit();">
+            Log out
+        </a>
+    </li>
+{% endif %}
+```
+
+8. The speaker creates the logout form right below the logout link. The form's action attribute points to the logout URL, and the method is set to "POST". They also include the CSRF token required for security.
+
+Code:
+```html
+<!-- _navbar.html -->
+{% if user.is_authenticated %}
+    <!-- Existing code -->
+{% else %}
+    <li class="nav-item">
+        <a class="nav-link" href="javascript:{}" onclick="document.getElementById('logout').submit();">
+            Log out
+        </a>
+    </li>
+    <form id="logout" action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+    </form>
+{% endif %}
+```
+
+9. Finally, the speaker goes to the corresponding view function in "views.py" to handle the logout functionality. They check if the request method is POST, log the user out using the `auth.logout` function, display a success message, and redirect to the index page.
+
+Code:
+```python
+# views.py
+from django.contrib import messages
+from django.shortcuts import redirect
+
+def logout(request):
+    if request.method == 'POST':
+        auth.logout(request)
+        messages.success(request, 'You are now logged out.')
+        return redirect('index')
+```
+
+That's the detailed step-by-step breakdown with the corresponding code snippets for the discussed transcript section.
+
+## 8.7. Dynamic Page Titles
+
+Step-by-step process to implement custom titles for each page:
+
+1. Open the base HTML file of your application.
+2. Add a new block for the title by using the `{% block %}` syntax. Name this block "title".
+   ```html
+   {% block title %}
+   {% endblock %}
+   ```
+3. Decide where you want to place the subtitle (e.g., "BT Real Estate") in the page title. You can choose to include a pipe character or hyphen to separate the subtitle from the rest of the title. For example, "BT Real Estate | Welcome".
+4. Locate the specific HTML pages where you want to add custom titles.
+   - For the home page (index.html), add the following code after loading other elements:
+     ```html
+     {% block title %}Welcome{% endblock %}
+     ```
+   - For the about page, add the following code:
+     ```html
+     {% block title %}About Us{% endblock %}
+     ```
+   - For the listings page, add the following code:
+     ```html
+     {% block title %}Browse Property Listings{% endblock %}
+     ```
+   - For the search page, add the following code:
+     ```html
+     {% block title %}Search Results{% endblock %}
+     ```
+   - For the listing page, dynamically generate the title based on the specific listing. Use the `listing.title` variable to represent the title.
+     ```html
+     {% block title %}{{ listing.title }}{% endblock %}
+     ```
+   - For the register page, add the following code:
+     ```html
+     {% block title %}Register Account{% endblock %}
+     ```
+   - For the login page, add the following code:
+     ```html
+     {% block title %}Account Login{% endblock %}
+     ```
+   - For the dashboard page, add the following code:
+     ```html
+     {% block title %}User Dashboard{% endblock %}
+     ```
+5. Save the changes to the HTML files.
+6. Test the custom titles by reloading each page in the front-end of the website.
+
+Next steps related to working with contacts and inquiries:
+
+1. The next section will focus on handling form submissions for contacts or inquiries.
+2. Set up a view method that receives the form data and stores it in the database.
+3. Ensure that the form includes fields for name, email, and any additional required information.
+4. If a user is logged in, automatically populate the name and email fields with their information.
+5. Store the user's ID along with the form data in the database to track inquiries made by logged-in users.
+6. Implement functionality to display user inquiries in their respective dashboards.
+
+Please note that the code provided in the transcript is not complete and may require further implementation based on the specific framework or technology being used in your application.
+
+## 9.1. Contacts App Model
+
+Sure! Here's a detailed step-by-step summary with relevant code snippets:
+
+1. Open the terminal and make sure you're in the virtual environment.
+   ```bash
+   $ source venv/bin/activate
+
+   .\venv\Scripts\activate
+   ```
+
+2. Create a new Django app called "contacts" using the following command:
+   ```bash
+   $ python manage.py startapp contacts
+   ```
+
+3. Open the file `contacts/models.py` and define the Contact model with its fields:
+   ```python
+   # contacts/models.py
+
+   from django.db import models
+   from datetime import datetime
+
+   class Contact(models.Model):
+       listing = models.CharField(max_length=200)
+       listing_id = models.IntegerField()
+       name = models.CharField(max_length=200)
+       email = models.CharField(max_length=100)
+       phone = models.CharField(max_length=100)
+       message = models.TextField(blank=True)
+       contact_date = models.DateTimeField(default=datetime.now, blank=True)
+       user_id = models.IntegerField(blank=True)
+   
+       def __str__(self):
+           return self.name
+   ```
+
+4. Create a migration file for the contacts app using the following command:
+   ```bash
+   $ python manage.py makemigrations contacts
+   ```
+
+   Note: If you encounter an error stating that the contacts app could not be found, ensure that you have added the app to the `INSTALLED_APPS` list in the `settings.py` file.
+
+5. Apply the migration to create the contacts table in the database:
+   ```bash
+   $ python manage.py migrate
+   ```
+
+6. Verify that the migration was successful by checking the database table (e.g., using pgAdmin or psql shell).
+
+   Additionally, the code snippet for adding the `contacts` app to the `INSTALLED_APPS` list in `settings.py` should look like this:
+   ```python
+   # settings.py
+
+   INSTALLED_APPS = [
+       # Other installed apps...
+       'contacts.apps.ContactsConfig',
+   ]
+   ```
+
+That's it! You have successfully created the `Contact` model, generated the migration, and applied it to create the corresponding database table.
+
+## 9.2. Contacts Admin Customization
+
+Step-by-step summary of the video:
+
+1. The video begins by mentioning that in the previous video, a contacts app was created, including the model and migration. This resulted in the creation of a contacts database table.
+
+2. The focus then shifts to the admin.py file, where the contact model needs to be registered so that it can be accessed and managed in the admin area.
+
+3. To register the contact model, the following code is added to the admin.py file:
+   ```python
+   from .models import Contact
+   
+   class ContactAdmin(admin.ModelAdmin):
+       list_display = ('ID', 'name', 'email', 'contact_date')
+       list_display_links = ('ID', 'name')
+       search_fields = ('name', 'email', 'listing')
+       list_per_page = 25
+   
+   admin.site.register(Contact, ContactAdmin)
+   ```
+
+4. The code above creates a custom admin class, `ContactAdmin`, which inherits from `admin.ModelAdmin`. This allows for customizations to be made to the way the contact model is displayed and managed in the admin area.
+
+5. The customizations made in the `ContactAdmin` class are as follows:
+   - `list_display`: Specifies the fields to be displayed in the list view of the contacts. In this case, the fields are ID, name, email, and contact_date.
+   - `list_display_links`: Determines which fields in the list view should be clickable links. Here, ID and name are chosen as the clickable fields.
+   - `search_fields`: Defines the fields that can be searched in the admin area. In this case, name, email, and listing are included as searchable fields.
+   - `list_per_page`: Sets the number of contacts to be displayed per page in the admin area, which is set to 25.
+
+6. After adding the code to the admin.py file and saving it, the video demonstrates how to access the admin area and navigate to the contacts section. It is mentioned that contacts can be added manually, but the primary purpose of this feature is to store information from the inquiry form on the application.
+
+7. The video concludes by mentioning that the next step will be preparing the inquiry form, which involves making some changes to the existing form to include dynamic content such as the name and email of the logged-in user, as well as hidden fields.
+
+## 9.3. Contact Form Prep
+
+Step 1: Adding the form tag
+- In the listing.html template, locate the inquiry modal section.
+- Add a form tag with the following attributes:
+  - action: "contact"
+  - method: "post"
+  - Add a CSRF token to secure the form.
+
+Code:
+```html
+<form action="contact" method="post">
+  {% csrf_token %}
+  <!-- Rest of the form elements will be added in subsequent steps -->
+</form>
+```
+
+Step 2: Adding user ID as a hidden input
+- Check if the user is authenticated.
+- If the user is authenticated, add a hidden input field for the user ID.
+- Set the value of the input field as the user's ID.
+- If the user is not authenticated, still include the input field with a value of zero.
+
+Code:
+```html
+{% if user.is_authenticated %}
+  <input type="hidden" name="user_id" value="{{ user.id }}">
+{% else %}
+  <input type="hidden" name="user_id" value="0">
+{% endif %}
+```
+
+Step 3: Adding realtor email and listing ID as hidden inputs
+- Add two more hidden input fields for the realtor email and listing ID.
+- Set the value of the realtor email input field as `listing.realtor.email`.
+- Set the value of the listing ID input field as `listing.id`.
+
+Code:
+```html
+<input type="hidden" name="realtor_email" value="{{ listing.realtor.email }}">
+<input type="hidden" name="listing_id" value="{{ listing.id }}">
+```
+
+Step 4: Displaying user name and email if authenticated
+- Check if the user is authenticated.
+- If the user is authenticated, display their name and email as the default values for the name and email fields.
+
+Code:
+```html
+<input type="text" name="name" value="{% if user.is_authenticated %}{{ user.first_name }} {{ user.last_name }}{% endif %}" required>
+<input type="email" name="email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required>
+```
+
+Step 5: Handling form submission and setting up URLs
+- Create a URL configuration file for the contact app.
+- Define a URL pattern for the contact submission.
+- Include the contact URLs in the main urls.py file.
+- Create a view method to handle the contact form submission.
+
+Code (contact/urls.py):
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('contact', views.contact, name='contact'),
+]
+```
+
+Code (btre/urls.py):
+```python
+from django.urls import include, path
+
+urlpatterns = [
+    # Other URL patterns
+    path('contacts/', include('contact.urls')),
+]
+```
+
+Code (contact/views.py):
+```python
+from django.shortcuts import render
+
+def contact(request):
+    if request.method == 'POST':
+        # Handle the form submission here
+
+    return render(request, 'contact.html')
+```
+
+Note: The actual form submission handling code is not included in the provided transcript.
+
+## 9.4. Contact Form Submission
+
+Step-by-step breakdown of the transcript with code snippets:
+
+1. Preparation and initial handling of form submission:
+- The speaker mentions that they have prepared a contact form and now need to handle the submission.
+- They check if the request method is a POST request.
+- If it is a POST request, they print a "hello" message to confirm the form submission.
+
+```python
+if request.method == 'POST':
+    print("hello")
+    return
+```
+
+2. Capturing form fields:
+- The speaker explains that they need to capture various fields from the form.
+- They start by capturing the listing ID field using `request.POST.get('listing ID')`.
+- They repeat the same process for other fields like listing title, name, email, phone, message, user ID, and realtor email.
+
+```python
+listing_id = request.POST.get('listing ID')
+listing_title = request.POST.get('listing title')
+name = request.POST.get('name')
+email = request.POST.get('email')
+phone = request.POST.get('phone')
+message = request.POST.get('message')
+user_id = request.POST.get('user ID')
+realtor_email = request.POST.get('realtor email')
+```
+
+3. Fixing import and redirect issues:
+- The speaker encounters some import issues for the `messages` module and the `redirect` function.
+- They resolve the issue by importing `messages` from `django.contrib` and `redirect` from `shortcuts`.
+
+```python
+from django.contrib import messages
+from django.shortcuts import redirect
+```
+
+4. Implementing redirection and error handling:
+- The speaker aims to redirect the user to the correct page after form submission.
+- They make adjustments in the code to ensure the redirection works properly.
+- They plan to implement a feature that notifies users if they have already made an inquiry for a specific property.
+
+```python
+# Redirection to the correct listing page
+return redirect('listings/' + listing_id)
+
+# Future implementation for duplicate inquiry check
+# Show error message if user already made an inquiry for the property
+if user_already_made_inquiry:
+    messages.error(request, 'You have already made an inquiry for this property.')
+```
+
+Please note that the provided code snippets are generalized examples based on the information provided in the transcript. The actual implementation may vary depending on the specific framework or programming language being used.
+
+## 9.5. Inquiry Check Send Email
+
+Step-by-step breakdown with code:
+
+1. Checking if the authenticated user has already sent an inquiry:
+
+```python
+if request.user.is_authenticated:
+    user_id = request.user.id
+    has_contacted = Contact.objects.filter(listing_id=listing_id, user_id=user_id).exists()
+    if has_contacted:
+        messages.error(request, "You have already made an inquiry for this listing.")
+        return redirect('listing', listing_id)
+```
+
+2. Sending an email notification to the realtor:
+
+In the `settings.py` file, configure the email settings for Gmail:
+
+```python
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'your-email@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-password'
+EMAIL_USE_TLS = True
+```
+
+In the `views.py` file, import the necessary modules:
+
+```python
+from django.core.mail import send_mail
+```
+
+Then, after saving the contact information, add the following code to send the email:
+
+```python
+subject = 'Property Listing Inquiry'
+message = f'There has been an inquiry for {listing.title}. Sign into the admin panel for more information.'
+from_email = 'traversee.brad@gmail.com'
+to_email = ['realtor@example.com', 'your-email@gmail.com']
+
+send_mail(subject, message, from_email, to_email, fail_silently=False)
+```
+
+Note: Replace `'your-email@gmail.com'` with your actual Gmail email address, and `'your-password'` with your Gmail password.
+
+3. Testing the functionality:
+
+To test the inquiry submission and email sending, you can simulate a form submission. After submitting the form, check your email inbox for the notification.
+
+Additional notes:
+
+- The code assumes the existence of a `Contact` model that stores the contact information and includes fields such as `listing_id` and `user_id`.
+- The code provided assumes the use of Django's built-in `messages` framework for displaying error messages.
+- Make sure you have the necessary permissions and access to use Gmail's SMTP server.
+
+## 9.6. Dashboard Functionality
+
+Certainly! Here's a step-by-step breakdown of the transcript, including the code snippets:
+
+1. The speaker begins by stating the goal of making the dashboard dynamic instead of static HTML.
+2. They open the project in VS Code and navigate to the views.py file in the accounts app.
+3. The Contact model needs to be imported, so they add the import statement:
+
+```python
+from contacts_app.models import Contact
+```
+
+4. They want to retrieve the contacts/inquiries for the logged-in user. To do this, they modify the existing code in views.py. They locate the dashboard view and make the following changes:
+
+```python
+def dashboard(request):
+    user_contacts = Contact.objects.order_by('-contact_date').filter(user_id=request.user.id)
+    context = {
+        'contacts': user_contacts,
+    }
+    return render(request, 'dashboard.html', context)
+```
+
+In this code snippet:
+- The `Contact` model is used to retrieve the contacts.
+- The contacts are ordered by the `contact_date` field in descending order.
+- The contacts are filtered by the `user_id`, which is obtained from `request.user.id`.
+- The resulting contacts are stored in the `user_contacts` variable.
+- The contacts are passed to the `dashboard.html` template via the `context` dictionary.
+
+5. Moving to the dashboard.html template, the speaker makes several changes:
+- They update the title to "User Dashboard" by modifying the appropriate HTML tag.
+- They replace the static welcome message with a dynamic one using the user's first name:
+
+```html
+<h3>Welcome, {{ user.first_name }}</h3>
+```
+
+- They notice an issue with the breadcrumb navigation and correct it to make the "Dashboard" link active.
+- They decide to display the user's contacts/inquiries in a table. They keep the first table row and delete the rest.
+
+```html
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Listing Title</th>
+            <th>View Listing</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contact in contacts %}
+        <tr>
+            <td>{{ contact.id }}</td>
+            <td>{{ contact.listing }}</td>
+            <td><a href="{% url 'listing' contact.listing_id %}">View Listing</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">You have not made any inquiries.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+```
+
+In this code snippet:
+- The `{% for %}` loop iterates over each contact in the `contacts` list.
+- The contact's ID, listing title, and a link to view the listing are displayed in the table row.
+- If there are no contacts, an "empty" section is rendered with a message stating that no inquiries have been made.
+
+6. The speaker mentions testing and potential revisions based on client feedback, but that is not directly relevant to the technical implementation.
+
+Note: The code provided assumes the existence of appropriate Django models, views, templates, and URL configurations. It's important to adapt the code to fit your project's structure and naming conventions.
+
+## 10.1. Pushing To Github
+
+1. Django deployment can be challenging compared to PHP or other languages due to the lack of pre-made scripts. For example, PHP has many pre-built scripts available with shared hosts, making deployment easier. However, with Django, you need to set up various components manually.
+
+2. The speaker recommends using DigitalOcean, a platform that offers virtual private servers called droplets, for deploying the Django app. These droplets are essentially instances of Linux distributions, and in this case, Ubuntu will be used. By utilizing DigitalOcean, you can recreate the necessary setup on a remote machine.
+
+3. Pushing the project to a repository like GitHub is advised for version control and collaboration purposes. The speaker creates a new private repository named "btre_project" for a Django real estate website. This example demonstrates creating a private repository, but choosing a public repository is also an option. However, private repositories usually require a fee, while public repositories are free.
+
+4. The project is pushed to the repository using Git commands. The speaker demonstrates the process by using the terminal. First, the files are added to the staging area using the command `git add .`. Then, a commit is made with a comment, such as "initial commit," using the command `git commit -m "initial commit"`. Finally, GitHub is added as a remote repository using the command `git remote add origin <repository URL>`, and the project is pushed to the master branch with `git push origin master`.
+
+5. A GitHub gist is provided as a detailed deployment guide, covering various steps. This guide explains the entire deployment process, including creating a DigitalOcean droplet, setting up SSH keys, implementing security measures, using PostgreSQL as the database, configuring a virtual environment, uploading files using Git, utilizing Gunicorn as a server, setting up Nginx as a proxy, and configuring the domain. The guide may need updating, but following along with the course will help navigate through the deployment process. Additionally, a link is provided to sign up for DigitalOcean, offering a $10 credit and two months of free hosting on the $5 plan.
+
+By following these steps, the speaker aims to assist learners in successfully deploying their Django applications using DigitalOcean and GitHub.
+
+## 10.1. Droplet Setup SSH Keys
+## 10.1.
+## 10.1.
+## 10.1.
+## 10.1.
+## 10.1.
+## 10.1.
+## 10.1.
+## 10.1.
 
 
 
