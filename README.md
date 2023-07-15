@@ -8,6 +8,16 @@
 
 All resources can be found in [resources](../resources) directory.
 
+**BT Meaning:**
+
+The meaning of "BT" in the project title "BT Real Estate" could have multiple interpretations.
+
+1. Acronym: "BT" could potentially represent "Best Transaction" indicating that the platform aims to provide a superior and efficient property buying/selling experience.
+
+2. Branding: "BT" could be a unique branding element chosen by the project's creators. It might not have a specific meaning but serves as a distinct and memorable name for the real estate web application.
+
+Ultimately, it's essential to clarify this during an interview by explaining that the meaning of "BT" may vary depending on the project's context and purpose.
+
 ## TABLE OF CONTENT
 
 <!-- TOC -->
