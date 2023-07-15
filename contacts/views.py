@@ -27,11 +27,14 @@ def contact(request):
         contact = Contact(listing=listing, listing_id=listing_id, name=name, email=email, phone=phone, message=message, user_id=user_id)
         contact.save()
         # Send Email Config
+        # Replace the below mails
         send_mail(
             'Property Listing Inquiry',
             'THere has been an inquiry for ' + listing + '. Sign into the admin panel for more info',
-            'irfan884025@gmail.com',
-            [realtor_email, 'rfinixgameplay@gmail.com'],
+            # Company Mail
+            'company.btre@gmail.com',
+            # Owner Mail in which all wants to receive
+            [realtor_email, 'owner.btre@gmail.com'],
             fail_silently=False
         )
         
