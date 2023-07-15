@@ -6,7 +6,7 @@
 - There are images for the site, including a showcase image, a building image for the background, and an about images.
 - The app requirements document outlines front-end pages, design specifications, and required functionality such as managing listings, realtors, contact inquiries, and website users through the admin area. Pagination, search functionality, and displaying realtors on the about page are also mentioned.
 
-All resources can be found in [resources](../resources) directory.
+All [resources]() can be found in Release Section.
 
 **BT Meaning:**
 
