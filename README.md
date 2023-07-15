@@ -18,6 +18,14 @@ The meaning of "BT" in the project title "BT Real Estate" could have multiple in
 
 Ultimately, it's essential to clarify this during an interview by explaining that the meaning of "BT" may vary depending on the project's context and purpose.
 
+## Before Deployment
+
+Change the settings -
+
+1. Set the emails for productions
+2. Set your essentials ex: `company name`, `logo` etc.
+3. 
+
 ## TABLE OF CONTENT
 
 <!-- TOC -->
