@@ -1,5 +1,18 @@
 # BT Real Estate project
 
+## Technology Used
+
+1. Python
+2. Django
+3. Postgres
+4. PgAdmin
+5. Bootstrap
+6. HTML
+7. CSS
+8. JS
+
+## Project Overview
+
 - The project is for a client called BT Real Estate who wants a website with an admin area.
 - The project resources include a folder called "btre resources" with an app requirements document, logo files, and various images.
 - The logo is a simple design with a white version and a dark version available.
@@ -30,8 +43,11 @@ Change the settings -
 
 <!-- TOC -->
 - [BT Real Estate project](#bt-real-estate-project)
-  - [TABLE OF CONTENT](#table-of-content)
+  - [Technology Used](#technology-used)
   - [Project Overview](#project-overview)
+  - [Before Deployment](#before-deployment)
+  - [TABLE OF CONTENT](#table-of-content)
+  - [Project Overview](#project-overview-1)
     - [Theme](#theme)
   - [Virtual Environment](#virtual-environment)
     - [Commands](#commands)
