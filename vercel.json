@@ -11,16 +11,16 @@
         },
         {
             "src": "build_files.sh",
-            "use": "@vercel/static-build",
+            "use": "@vercel/static",
             "config": {
-                "distDir": "staticfiles_build"
+                "distDir": "static"
             }
         }
     ],
     "routes": [
         {
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
+            "src": "/staticfiles/(.*)",
+            "dest": "/staticfiles/$1"
         },
         {
             "src": "/(.*)",
