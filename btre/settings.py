@@ -26,8 +26,11 @@ SECRET_KEY = 'django-insecure-f&&8m4!z^&&e*emt2a&3!cf7lt=p!b@rx328w5-x7z%+bh7sj5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Local Settings
+# ALLOWED_HOSTS = []
 
+# Remote Settings
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -80,6 +83,8 @@ WSGI_APPLICATION = 'btre.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# Local Postgres Setup
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -90,6 +95,19 @@ DATABASES = {
     }
 }
 
+'''
+
+# Remote Postgres Setup - Railway
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': '*1GCb44*3D6CEg1F1A-AgGGDCdcc2F6D',
+        'HOST': 'roundhouse.proxy.rlwy.net',
+        'PORT': '23685',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -126,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 # added by me
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
 # Added by me
 STATICFILES_DIRS = [
